@@ -1,0 +1,42 @@
+[
+    {
+        "licenseNumber": "MH-01-20190012345",
+        "carNumber": "MH-12-AB-1234"
+    },
+    {
+        "licenseNumber": "KA-02-20210045678",
+        "carNumber": "KA-05-CD-5678"
+    },
+    {
+        "licenseNumber": "DL-03-20180090123",
+        "carNumber": "DL-09-EF-9012"
+    },
+    {
+        "licenseNumber": "TN-04-20170023456",
+        "carNumber": "TN-22-GH-3456"
+    },
+    {
+        "licenseNumber": "UP-05-20160056789",
+        "carNumber": "UP-20-IJ-5678"
+    },
+    {
+        "licenseNumber": "AP-06-20150089012",
+        "carNumber": "AP-16-KL-9012"
+    },
+    {
+        "licenseNumber": "GJ-07-20140012345",
+        "carNumber": "GJ-18-MN-2345"
+    },
+    {
+        "licenseNumber": "KA-08-20130045678",
+        "carNumber": "KA-08-OP-4567"
+    },
+    {
+        "licenseNumber": "MH-09-20120090123",
+        "carNumber": "MH-13-QR-0123"
+    },
+    {
+        "licenseNumber": "RJ-10-20110023456",
+        "carNumber": "RJ-14-ST-3456"
+    }
+]

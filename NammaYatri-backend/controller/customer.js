@@ -6,7 +6,6 @@ const BOOKINGS = require('../model/bookingSchema');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const DRIVER_ON_DUTY = require('../model/driverOnDutySchema');
-const BOOKINGS = require('../model/bookingSchema');
 const geolib = require('geolib');
 const dotenv = require('dotenv').config();
 const http = require('http');
@@ -134,7 +133,12 @@ module.exports.CREATE_BOOKING = async (req, res) => {
                     var currentDistance = geolib.getDistance({ latitude: customerLatitude, longitude: customerLongitude },
                         { latitude: driver.driverLatitude, longitude: driver.driverLongitude })
 
+                    if (currentDistance <= 300) {
+                        driversAvailable.set(driver._id, socket);
+                    }
+
                 })
+
 
             })
         }

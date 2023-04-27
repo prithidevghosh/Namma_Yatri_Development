@@ -8,10 +8,10 @@ const jwt = require('jsonwebtoken');
 const DRIVER_ON_DUTY = require('../model/driverOnDutySchema');
 const geolib = require('geolib');
 const dotenv = require('dotenv').config();
-const http = require('http');
-const server = http.createServer(app);
-const { Server } = require('socket.io');
-const io = new Server(server);
+// const http = require('http');
+// const server = http.createServer(app);
+// const { Server } = require('socket.io');
+// const io = new Server(server);
 
 //function to generate the otp 
 module.exports.CREATE_CUSTOMER_GENERATE_OTP = async (req, res) => {

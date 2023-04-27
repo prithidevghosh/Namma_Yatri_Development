@@ -9,6 +9,10 @@ const DRIVER_ON_DUTY = require('../model/driverOnDutySchema');
 const BOOKINGS = require('../model/bookingSchema');
 const geolib = require('geolib');
 const dotenv = require('dotenv').config();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(server);
 
 //function to generate the otp 
 module.exports.CREATE_CUSTOMER_GENERATE_OTP = async (req, res) => {
@@ -122,24 +126,41 @@ module.exports.CREATE_BOOKING = async (req, res) => {
                 message: "No driver is currently available"
             })
         } else {
-            const customerLatitude = req.body.latitude;
-            const customerLongitude = req.body.longitude;
-            let driverId = 0;
-            let minDistance = Infinity;
-            let driversAvailable = new Map();
-            driverOnDutyFetchedDb.forEach(driver => {
-                var currentDistance = geolib.getDistance({ latitude: customerLatitude, longitude: customerLongitude },
-                    { latitude: driver.driverLatitude, longitude: driver.driverLongitude })
-                // if (currentDistance < minDistance) {
-                //     driverId = driver._id;
-                //     minDistance = currentDistance;
-                // }
+            io.on('connection', (socket) => {
+                const customerLatitude = req.body.latitude;
+                const customerLongitude = req.body.longitude;
+                let driversAvailable = new Map();
+                driverOnDutyFetchedDb.forEach(driver => {
+                    var currentDistance = geolib.getDistance({ latitude: customerLatitude, longitude: customerLongitude },
+                        { latitude: driver.driverLatitude, longitude: driver.driverLongitude })
+
+                })
 
             })
-
         }
     } catch (error) {
 
+    }
+}
+
+
+module.exports.GET_ALL_BOOKING = async (req, res) => {
+    try {
+        const bookingFetchedDb = await BOOKINGS.find({ customerContact: req.params.contact });
+        if (bookingFetchedDb.length > 0) {
+            return res.status(200).json({
+                message: "Booking found",
+                bookings: bookingFetchedDb
+            })
+        } else {
+            return res.status(400).json({
+                message: "No bookings made so far"
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            message: "error caught in catch block of get booking"
+        })
     }
 }
 

@@ -5,9 +5,19 @@ const bookingSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    customerContact: {
+        type: Number,
+        required: true,
+        unique: true
+    },
     driverName: {
         type: String,
         required: true
+    },
+    driverContact: {
+        type: Number,
+        required: true,
+        unique: true
     },
     carNumber: {
         type: String,

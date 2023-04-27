@@ -8,6 +8,11 @@ const app = express();
 app.use(express.urlencoded());
 app.use(express.json())
 
+app.get('/', (req, res) => {
+    return res.status(200).json({
+        message: "Namma Yatri backend api instance"
+    })
+})
 app.use('/api', require('./routes/index'));
 
 app.listen(port, (e) => {

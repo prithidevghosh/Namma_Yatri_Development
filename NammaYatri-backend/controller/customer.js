@@ -125,22 +125,22 @@ module.exports.CREATE_BOOKING = async (req, res) => {
                 message: "No driver is currently available"
             })
         } else {
-            io.on('connection', (socket) => {
-                const customerLatitude = req.body.latitude;
-                const customerLongitude = req.body.longitude;
-                let driversAvailable = new Map();
-                driverOnDutyFetchedDb.forEach(driver => {
-                    var currentDistance = geolib.getDistance({ latitude: customerLatitude, longitude: customerLongitude },
-                        { latitude: driver.driverLatitude, longitude: driver.driverLongitude })
+            // io.on('connection', (socket) => {
+            //     const customerLatitude = req.body.latitude;
+            //     const customerLongitude = req.body.longitude;
+            //     let driversAvailable = new Map();
+            //     driverOnDutyFetchedDb.forEach(driver => {
+            //         var currentDistance = geolib.getDistance({ latitude: customerLatitude, longitude: customerLongitude },
+            //             { latitude: driver.driverLatitude, longitude: driver.driverLongitude })
 
-                    if (currentDistance <= 300) {
-                        driversAvailable.set(driver._id, socket);
-                    }
+            //         if (currentDistance <= 300) {
+            //             driversAvailable.set(driver._id, socket);
+            //         }
 
-                })
+            //     })
 
 
-            })
+            // })
         }
     } catch (error) {
 

@@ -2,6 +2,7 @@ const twilio = require('twilio');
 const otpGenerator = require('otp-generator');
 const CUSTOMER = require('../model/customerSchema');
 const OTP = require('../model/otpSchema')
+const BOOKINGS = require('../model/bookingSchema');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const DRIVER_ON_DUTY = require('../model/driverOnDutySchema');
@@ -89,10 +90,16 @@ module.exports.CREATE_SESSION = async (req, res) => {
             })
         }
         else {
+
             if (req.body.password == customerFetchedDb.password) {
+                let logtoken = jwt.sign(customerFetchedDb.toJSON(), process.env.JWT_ENCRYPTION_KEY, { expiresIn: '1000000' });
+                // console.log(logtoken);
+                const decoded = jwt.verify(logtoken, process.env.JWT_ENCRYPTION_KEY);
+                const userId = decoded._id;
+                console.log(userId);
                 return res.status(200).json({
                     message: "customer signed in successfully",
-                    token: jwt.sign(customerFetchedDb.toJSON(), process.env.JWT_ENCRYPTION_KEY, { expiresIn: '1000000' })
+                    token: logtoken
                 })
             } else {
                 return res.status(400).json({
@@ -119,20 +126,33 @@ module.exports.CREATE_BOOKING = async (req, res) => {
             const customerLongitude = req.body.longitude;
             let driverId = 0;
             let minDistance = Infinity;
+            let driversAvailable = new Map();
             driverOnDutyFetchedDb.forEach(driver => {
                 var currentDistance = geolib.getDistance({ latitude: customerLatitude, longitude: customerLongitude },
                     { latitude: driver.driverLatitude, longitude: driver.driverLongitude })
-                if (currentDistance < minDistance) {
-                    driverId = driver._id;
-                    minDistance = currentDistance;
-                }
+                // if (currentDistance < minDistance) {
+                //     driverId = driver._id;
+                //     minDistance = currentDistance;
+                // }
+
             })
-
-
-
 
         }
     } catch (error) {
 
+    }
+}
+
+module.exports.CANCEL_BOOKING = async (req, res) => {
+    try {
+        const bookingFetchedDb = await BOOKINGS.findByIdAndDelete(req.params.id);
+        return res.status(200).json({
+            message: "Booking cancelled"
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message: `error caught in catch block of cancel booking and error is ${error}`
+        })
     }
 }

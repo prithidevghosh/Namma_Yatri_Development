@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Box</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        .chatbox {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 60%;
+            height: 400px;
+            overflow-y: scroll;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .message-sent {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+        }
+
+        .message-received {
+            background-color: #f1f0f0;
+            color: black;
+            align-self: flex-start;
+        }
+
+        .input-group {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 60%;
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="chatbox">
+                    <div class="messages"></div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Type your message...">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary send-btn" type="button">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messages = document.querySelector('.messages');
+        const input = document.querySelector('.form-control');
+        const sendBtn = document.querySelector('.send-btn');
+
+        sendBtn.addEventListener('click', () => {
+            if (input.value !== '') {
+                const message = document.createElement('div');
+                message.innerText = input.value;
+                message.classList.add('message', 'message-sent');
+                messages.appendChild(message);
+                input.value = '';
+                messages.scrollTop = messages.scrollHeight;
+            }
+        });
+
+        // simulate receiving message
+        setTimeout(() => {
+            const message = document.createElement('div');
+            message.innerText = 'Hello, how are you?';
+            message.classList.add('message', 'message-received');
+            messages.appendChild(message);
+            messages.scrollTop = messages.scrollHeight;
+        }, 1000);
+    </script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        class ChatEngine{
+            constructor
+        }
+    </script>
+</body>
+
+</html>

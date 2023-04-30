@@ -29,8 +29,8 @@ module.exports.CREATE_CUSTOMER_GENERATE_OTP = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         otp.customerOTP = await bcrypt.hash(otp.customerOTP, salt);
         const result = await otp.save();
-        const accountSid = "ACf9c34d5652877b224c895fae85fada12";
-        const authToken = "7efa2bade3b7367b53749ec1c29ea619";
+        const accountSid = process.env.TWILIO_ACCOUNT_SID;
+        const authToken = process.env.TWILIO_AUTH_TOKEN;
         const client = twilio(accountSid, authToken);
 
         client.messages

@@ -2,22 +2,58 @@ const passport = require('passport');
 const jwtStrategy = require('passport-jwt').Strategy;
 const extractJwt = require('passport-jwt').ExtractJwt;
 const dotEnv = require('dotenv').config();
+const CUSTOMER = require('../model/customerSchema');
+const DRIVER = require('../model/driverSchema');
 
 var opts = {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    jwtFromRequest: extractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_ENCRYPTION_KEY
 }
 
-passport.use(new jwtStrategy(opts, function (jwt_payload, done) {
-    User.findOne({ id: jwt_payload.sub }, function (err, user) {
-        if (err) {
-            return done(err, false);
+passport.use('customer-jwt', new jwtStrategy(opts, async (jwt_payload, done) => {
+    try {
+        const customerFethedDb = await CUSTOMER.findById(jwt_payload._id);
+        if (customerFethedDb) {
+            return done(null, customerFethedDb);
         }
-        if (user) {
-            return done(null, user);
-        } else {
-            return done(null, false);
-            // or you could create a new account
-        }
-    });
+        return done(null, false);
+    } catch (error) {
+        return done(error, false);
+    }
 }))
+
+passport.use('driver-jwt', new jwtStrategy(opts, async (jwt_payload, done) => {
+    try {
+        const driverFethedDb = await DRIVER.findById(jwt_payload._id);
+        if (driverFethedDb) {
+            return done(null, driverFethedDb);
+        }
+        return done(null, false);
+    } catch (error) {
+        return done(error, false);
+    }
+}))
+
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+})
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const customer = await CUSTOMER.findById(id)
+        if (customer) {
+            return done(null, customer);
+        } else {
+            const driver = await DRIVER.findById(id);
+            if (driver) {
+                return done(null, driver);
+            }
+        }
+
+    } catch (error) {
+        return done(error);
+    }
+})
+
+
+module.exports = passport;

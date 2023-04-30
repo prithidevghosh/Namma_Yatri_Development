@@ -8,8 +8,9 @@ const DRIVER = require('../model/driverSchema');
 var opts = {
     jwtFromRequest: extractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_ENCRYPTION_KEY
-}
 
+}
+console.log(process.env.JWT_ENCRYPTION_KEY);
 passport.use('customer-jwt', new jwtStrategy(opts, async (jwt_payload, done) => {
     try {
         const customerFethedDb = await CUSTOMER.findById(jwt_payload._id);

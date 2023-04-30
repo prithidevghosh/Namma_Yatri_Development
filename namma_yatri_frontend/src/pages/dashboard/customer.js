@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import styles from '@/styles/dashboard.driver.module.scss';
+import styles from '@/styles/dashboard.customer.module.scss';
 import booking from '../../../public/assets/booking.gif';
 import showBooking from '../../../public/assets/showBooking.gif';
 import pastBooking from '../../../public/assets/pastBooking.gif';
-import nammaYatriLogo from '../../../public/assets/nammaYatriLogo.svg';
+import nammaYatriLogo from '../../../public/assets/brand.svg';
 import logoutIMG from '../../../public/assets/logoutIMG.png';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -16,15 +16,12 @@ function Dashboard() {
     const { isLoggedIn } = useSelector((state) => state.cabReducer);
     const router = useRouter();
     const dispatch = useDispatch();
-    if(!isLoggedIn){
-        router.push('/');
-    }
-  
+
     useEffect(() => {
       if (!isLoggedIn && localStorage.getItem('namma_data') === null) {
         router.push('/');
       }
-    }, [isLoggedIn]);
+    }, [isLoggedIn,router]);
   
     useEffect(() => {
       const nammaData = localStorage.getItem('namma_data');
@@ -74,7 +71,7 @@ function Dashboard() {
           />
         </div>
       </div>
-      <Link href='/login/driver' className={styles.link}>
+      <Link href='/createBooking' className={styles.link}>
         <div className={styles.container__card}>
           <Image alt='create' src={booking} width={300} height={300} />
           <div className={styles.container__label}>Create Booking</div>

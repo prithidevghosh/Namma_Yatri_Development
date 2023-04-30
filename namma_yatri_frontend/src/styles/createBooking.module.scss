@@ -1,0 +1,112 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  &__head {
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    top: 0rem;
+    left: 0rem;
+    padding: 1rem;
+    width: 100%;
+    background-color: #333333;
+  }
+  &__left {
+    display: flex;
+    align-items: center;
+  }
+
+  &__item {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border: 0.1rem #fff solid;
+    border-radius: 0.5rem;
+    &:hover {
+      color: #000;
+      background-color: #fff;
+    }
+  }
+
+  &__logo {
+    height: 2rem;
+    width: 8rem;
+  }
+
+  &__logout {
+    display: flex;
+    align-items: center;
+    img {
+      cursor: pointer;
+    }
+  }
+
+  &__username {
+    color: #fff;
+    padding: 0 1rem;
+    font-weight: 800;
+    font-size: 1rem;
+  }
+  &__body {
+    width: 100%;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  &__group {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 0;
+  }
+
+  &__label {
+    display: block;
+    margin: 2rem 0;
+    font-size: 2.4rem;
+    color: #40514e;
+    font-weight: 600;
+  }
+  &__label_inp {
+    margin: 0.5rem 0;
+    font-size: 1.4rem;
+    font-weight: 400;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-bottom: 2px solid #40514e;
+
+    &:focus {
+      outline: none;
+      border: 2px solid #90cea1;
+    }
+  }
+
+  &__button {
+    width: 200px;
+    padding: 10px;
+    background-color: #000000;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.4rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #353232;
+    }
+  }
+}

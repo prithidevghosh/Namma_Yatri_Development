@@ -4,7 +4,7 @@ import driver from '../../public/assets/driver.gif';
 import customer from '../../public/assets/customer.gif';
 import Image from 'next/image';
 import Link from 'next/link';
-import nammaYatriLogo from '../../public/assets/nammaYatrilogo.svg';
+import nammaYatriLogo from '../../public/assets/brand.svg';
 
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';

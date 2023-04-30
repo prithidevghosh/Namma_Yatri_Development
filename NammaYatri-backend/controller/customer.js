@@ -103,6 +103,7 @@ module.exports.CREATE_SESSION = async (req, res) => {
                 console.log(userId);
                 return res.status(200).json({
                     message: "customer signed in successfully",
+                    customerName: customerFetchedDb.customerName,
                     token: logtoken
                 })
             } else {

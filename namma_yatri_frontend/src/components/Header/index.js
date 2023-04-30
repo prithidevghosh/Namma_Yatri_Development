@@ -1,6 +1,5 @@
 import React from 'react';
-import brandIMG from '../../../public/assets/brand.gif';
-import nammaYatriLogo from '../../../public/assets/nammaYatrilogo.svg';
+import nammaYatriLogo from '../../../public/assets/brand.svg';
 
 
 import styles from './index.module.scss'; 

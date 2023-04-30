@@ -10,6 +10,7 @@ var opts = {
     secretOrKey: process.env.JWT_ENCRYPTION_KEY
 
 }
+console.log(process.env);
 console.log(process.env.JWT_ENCRYPTION_KEY);
 passport.use('customer-jwt', new jwtStrategy(opts, async (jwt_payload, done) => {
     try {

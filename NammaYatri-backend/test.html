@@ -96,11 +96,18 @@
         }, 1000);
     </script>
 
-    <script src="/socket.io/socket.io.js"></script>
+
     <script>
-        class ChatEngine{
-            constructor
-        }
+        let socket = new WebSocket('ws://localhost:8080');
+
+        socket.addEventListener('open', () => {
+            console.log("we are connected");
+        })
+
+        socket.addEventListener('message', (msg) => {
+            console.log(msg);
+        })
+
     </script>
 </body>
 

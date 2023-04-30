@@ -104,6 +104,7 @@ module.exports.CREATE_SESSION = async (req, res) => {
                 return res.status(200).json({
                     message: "customer signed in successfully",
                     customerName: customerFetchedDb.customerName,
+                    type: "customer",
                     token: logtoken
                 })
             } else {
@@ -116,6 +117,14 @@ module.exports.CREATE_SESSION = async (req, res) => {
         return res.status(500).json({
             message: `error generated in catch block while creating session , error is ${error}`
         })
+    }
+}
+
+module.exports.deleteSession = async (req, res) => {
+    try {
+
+    } catch (error) {
+
     }
 }
 

@@ -1,12 +1,14 @@
 const DRIVER_INFO = require('../model/driverInfo');
 const DRIVER = require('../model/driverSchema');
 const DRIVER_ON_DUTY = require('../model/driverOnDutySchema');
+const PAST_BOOKINGS = require('../model/pastBookingSchema')
 const otpGenerator = require('otp-generator');
 const bcrypt = require('bcrypt');
 const OTP = require('../model/otpSchema');
 const twilio = require('twilio')
 const dotEnv = require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const BOOKINGS = require('../model/bookingSchema');
 // const geoLocation = require('node-geolocation')
 
 module.exports.CREATE_DRIVER_GENERATE_OTP = async (req, res) => {
@@ -29,7 +31,8 @@ module.exports.CREATE_DRIVER_GENERATE_OTP = async (req, res) => {
                     otp.customerOTP = await bcrypt.hash(otp.customerOTP, salt);
                     const result = await otp.save();
                     const accountSid = "ACf9c34d5652877b224c895fae85fada12";
-                    const authToken = "7efa2bade3b7367b53749ec1c29ea619";
+                    const authToken = process.env.TWILIO_AUTH_TOKEN;
+
                     const client = twilio(accountSid, authToken);
                     // console.log(generatedOtp);
                     client.messages
@@ -53,7 +56,9 @@ module.exports.CREATE_DRIVER_GENERATE_OTP = async (req, res) => {
         }
     } catch (error) {
         return res.status(500).json({
-            message: `error caught in catch block in driver generate otp func, the error is ${error}`
+            message: `error caught in catch block in driver generate otp func, the error is ${error}`,
+            sid: process.env.TWILIO_ACCOUNT_SID,
+            AUTH: process.env.TWILIO_AUTH_TOKEN
         })
     }
 
@@ -103,6 +108,8 @@ module.exports.CREATE_SESSION = async (req, res) => {
             if (req.body.password == driverFetchedDb.password) {
                 return res.status(200).json({
                     message: "driver signed in successfully",
+                    driverName: driverFetchedDb.driverName,
+                    type: "driver",
                     token: jwt.sign(driverFetchedDb.toJSON(), process.env.JWT_ENCRYPTION_KEY, { expiresIn: '1000000' })
                 })
             } else {
@@ -170,3 +177,56 @@ module.exports.DELETE_ON_DUTY_SESSION = async (req, res) => {
         })
     }
 }
+
+module.exports.GET_ALL_BOOKING = async (req, res) => {
+    try {
+        const bookingFetchedDb = await BOOKINGS.find({ driverContact: req.params.contact });
+        if (bookingFetchedDb.length > 0) {
+            return res.status(200).json({
+                message: "Booking found",
+                bookings: bookingFetchedDb
+            })
+        } else {
+            return res.status(400).json({
+                message: "No bookings made so far"
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            message: "error caught in catch block of get booking"
+        })
+    }
+}
+
+module.exports.CANCEL_BOOKING = async (req, res) => {
+    try {
+        const bookingFetchedDb = await BOOKINGS.findByIdAndDelete(req.params.id);
+        return res.status(200).json({
+            message: "Booking cancelled"
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message: `error caught in catch block of cancel booking and error is ${error}`
+        })
+    }
+}
+
+module.exports.COMPLETE_TRIP = async (req, res) => {
+    try {
+        const bookingFetchedDb = await BOOKINGS.findById(req.params.id);
+        const newCompletedBooking = new PAST_BOOKINGS({
+            customerContact: bookingFetchedDb.customerContact,
+            driverName: bookingFetchedDb.driverName,
+            driverContact: bookingFetchedDb.driverContact,
+            carNumber: bookingFetchedDb.carNumber,
+            bookingStatus: "completed"
+        })
+        newCompletedBooking.save();
+        const result = await bookingFetchedDb.deleteOne();
+    } catch (error) {
+
+    }
+}
+
+

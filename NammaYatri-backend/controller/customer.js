@@ -2,12 +2,16 @@ const twilio = require('twilio');
 const otpGenerator = require('otp-generator');
 const CUSTOMER = require('../model/customerSchema');
 const OTP = require('../model/otpSchema')
+const BOOKINGS = require('../model/bookingSchema');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const DRIVER_ON_DUTY = require('../model/driverOnDutySchema');
-const BOOKINGS = require('../model/bookingSchema');
 const geolib = require('geolib');
 const dotenv = require('dotenv').config();
+// const http = require('http');
+// const server = http.createServer(app);
+// const { Server } = require('socket.io');
+// const io = new Server(server);
 
 //function to generate the otp 
 module.exports.CREATE_CUSTOMER_GENERATE_OTP = async (req, res) => {
@@ -15,7 +19,7 @@ module.exports.CREATE_CUSTOMER_GENERATE_OTP = async (req, res) => {
         const customerFetchedDb = await CUSTOMER.findOne({ customerContact: req.body.contact });
         if (customerFetchedDb) {
             return res.status(400).json({
-                message: "User already registered , kindly login to proceed"
+                message: "User already registered ,kindly login to proceed"
             })
         }
         const generatedOtp = otpGenerator.generate(6, {
@@ -26,7 +30,8 @@ module.exports.CREATE_CUSTOMER_GENERATE_OTP = async (req, res) => {
         otp.customerOTP = await bcrypt.hash(otp.customerOTP, salt);
         const result = await otp.save();
         const accountSid = "ACf9c34d5652877b224c895fae85fada12";
-        const authToken = "7efa2bade3b7367b53749ec1c29ea619";
+
+        const authToken = process.env.TWILIO_AUTH_TOKEN;
         const client = twilio(accountSid, authToken);
 
         client.messages
@@ -89,10 +94,18 @@ module.exports.CREATE_SESSION = async (req, res) => {
             })
         }
         else {
+
             if (req.body.password == customerFetchedDb.password) {
+                let logtoken = jwt.sign(customerFetchedDb.toJSON(), process.env.JWT_ENCRYPTION_KEY, { expiresIn: '1000000' });
+                // console.log(logtoken);
+                const decoded = jwt.verify(logtoken, process.env.JWT_ENCRYPTION_KEY);
+                const userId = decoded._id;
+                console.log(userId);
                 return res.status(200).json({
                     message: "customer signed in successfully",
-                    token: jwt.sign(customerFetchedDb.toJSON(), process.env.JWT_ENCRYPTION_KEY, { expiresIn: '1000000' })
+                    customerName: customerFetchedDb.customerName,
+                    type: "customer",
+                    token: logtoken
                 })
             } else {
                 return res.status(400).json({
@@ -107,6 +120,14 @@ module.exports.CREATE_SESSION = async (req, res) => {
     }
 }
 
+module.exports.deleteSession = async (req, res) => {
+    try {
+
+    } catch (error) {
+
+    }
+}
+
 module.exports.CREATE_BOOKING = async (req, res) => {
     try {
         const driverOnDutyFetchedDb = await DRIVER_ON_DUTY.find({});
@@ -115,24 +136,59 @@ module.exports.CREATE_BOOKING = async (req, res) => {
                 message: "No driver is currently available"
             })
         } else {
-            const customerLatitude = req.body.latitude;
-            const customerLongitude = req.body.longitude;
-            let driverId = 0;
-            let minDistance = Infinity;
-            driverOnDutyFetchedDb.forEach(driver => {
-                var currentDistance = geolib.getDistance({ latitude: customerLatitude, longitude: customerLongitude },
-                    { latitude: driver.driverLatitude, longitude: driver.driverLongitude })
-                if (currentDistance < minDistance) {
-                    driverId = driver._id;
-                    minDistance = currentDistance;
-                }
-            })
+            // io.on('connection', (socket) => {
+            //     const customerLatitude = req.body.latitude;
+            //     const customerLongitude = req.body.longitude;
+            //     let driversAvailable = new Map();
+            //     driverOnDutyFetchedDb.forEach(driver => {
+            //         var currentDistance = geolib.getDistance({ latitude: customerLatitude, longitude: customerLongitude },
+            //             { latitude: driver.driverLatitude, longitude: driver.driverLongitude })
+
+            //         if (currentDistance <= 300) {
+            //             driversAvailable.set(driver._id, socket);
+            //         }
+
+            //     })
 
 
-
-
+            // })
         }
     } catch (error) {
 
+    }
+}
+
+
+module.exports.GET_ALL_BOOKING = async (req, res) => {
+    try {
+        const bookingFetchedDb = await BOOKINGS.find({ customerContact: req.params.contact });
+        if (bookingFetchedDb.length > 0) {
+            return res.status(200).json({
+                message: "Booking found",
+                bookings: bookingFetchedDb
+            })
+        } else {
+            return res.status(400).json({
+                message: "No bookings made so far"
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            message: "error caught in catch block of get booking"
+        })
+    }
+}
+
+module.exports.CANCEL_BOOKING = async (req, res) => {
+    try {
+        const bookingFetchedDb = await BOOKINGS.findByIdAndDelete(req.params.id);
+        return res.status(200).json({
+            message: "Booking cancelled"
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message: `error caught in catch block of cancel booking and error is ${error}`
+        })
     }
 }

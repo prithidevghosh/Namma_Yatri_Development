@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
-const bookingSchema = new mongoose.Schema({
-    customerName: {
-        type: String,
-        required: true
-    },
+const pastBookingSchema = new mongoose.Schema({
     customerContact: {
         type: Number,
         required: true,
@@ -26,11 +22,14 @@ const bookingSchema = new mongoose.Schema({
     bookingDate: {
         type: Date,
         default: Date.now()
+    },
+    bookingStatus: {
+        type: String
     }
 }, {
     timestamps: true
 })
 
-const BOOKINGS = mongoose.model('bookings', bookingSchema);
+const PAST_BOOKINGS = mongoose.model('past-bookings', pastBookingSchema);
 
-module.exports = BOOKINGS;
+module.exports = PAST_BOOKINGS;

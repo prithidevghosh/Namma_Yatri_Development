@@ -6,29 +6,23 @@ const app = express();
 const passport = require('passport');
 const jwtStrategy = require('./config/passport-jwt-strategy');
 const session = require('express-session');
-// const chatServer = require('http').Server(app);
-// const socket = require('./config/socket').chatSockets(chatServer);
 const MongoStore = require('connect-mongo');
 const cors = require('cors');
-
-// chatServer.listen(process.env.PORT || 3000, () => {
-//     console.log("socket port up & runnning");
-// })
+const server = app.listen(port, () => {
+    console.log(`server started at port ${port}`);
+});
 
 const webSocket = require('ws');
-
-const wss = new webSocket.Server({ port: 8080 });
+const wss = new webSocket.Server({ server });
 
 wss.on('connection', (ws) => {
     console.log("a new client is connected");
-
     ws.send("hi message from server")
-})
-
+});
 
 app.use(cors());
 app.use(express.urlencoded());
-app.use(express.json())
+app.use(express.json());
 
 app.use(session({
     name: 'backend',
@@ -40,7 +34,7 @@ app.use(session({
         mongoUrl: "mongodb+srv://prithidevghosh:39039820@cluster0.3amaqwo.mongodb.net/NammaYatri",
         autoRemove: 'disabled'
     })
-}))
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -49,11 +43,6 @@ app.get('/', (req, res) => {
     return res.status(200).json({
         message: "Namma Yatri backend api instance"
     })
-})
+});
+
 app.use('/api', require('./routes/index'));
-
-app.listen(port, (e) => {
-    if (e) { console.log(e); return; }
-
-    console.log(`server started at port ${port}`);
-})

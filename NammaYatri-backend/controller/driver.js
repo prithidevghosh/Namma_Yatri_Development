@@ -108,7 +108,7 @@ module.exports.CREATE_SESSION = async (req, res) => {
             if (req.body.password == driverFetchedDb.password) {
                 return res.status(200).json({
                     message: "driver signed in successfully",
-                    driverName: driverFetchedDb.customerName,
+                    driverName: driverFetchedDb.driverName,
                     token: jwt.sign(driverFetchedDb.toJSON(), process.env.JWT_ENCRYPTION_KEY, { expiresIn: '1000000' })
                 })
             } else {

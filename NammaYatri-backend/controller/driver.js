@@ -30,8 +30,9 @@ module.exports.CREATE_DRIVER_GENERATE_OTP = async (req, res) => {
                     const salt = await bcrypt.genSalt(10);
                     otp.customerOTP = await bcrypt.hash(otp.customerOTP, salt);
                     const result = await otp.save();
-                    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+                    const accountSid = "ACf9c34d5652877b224c895fae85fada12";
                     const authToken = process.env.TWILIO_AUTH_TOKEN;
+
                     const client = twilio(accountSid, authToken);
                     // console.log(generatedOtp);
                     client.messages
@@ -55,7 +56,9 @@ module.exports.CREATE_DRIVER_GENERATE_OTP = async (req, res) => {
         }
     } catch (error) {
         return res.status(500).json({
-            message: `error caught in catch block in driver generate otp func, the error is ${error}`
+            message: `error caught in catch block in driver generate otp func, the error is ${error}`,
+            sid: process.env.TWILIO_ACCOUNT_SID,
+            AUTH: process.env.TWILIO_AUTH_TOKEN
         })
     }
 

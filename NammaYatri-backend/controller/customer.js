@@ -19,7 +19,7 @@ module.exports.CREATE_CUSTOMER_GENERATE_OTP = async (req, res) => {
         const customerFetchedDb = await CUSTOMER.findOne({ customerContact: req.body.contact });
         if (customerFetchedDb) {
             return res.status(400).json({
-                message: "User already registered , kindly login to proceed"
+                message: "User already registered ,kindly login to proceed"
             })
         }
         const generatedOtp = otpGenerator.generate(6, {

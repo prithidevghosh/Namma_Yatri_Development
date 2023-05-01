@@ -38,7 +38,8 @@ module.exports.chatSockets = function (socketServer) {
         cors: {
             origin: "*",
             methods: ["GET", "POST"]
-        }
+        },
+        timeout: 60000 // Set the connection timeout value to 60 seconds
     });
 
     io.sockets.on('connection', function (socket) {

@@ -17,6 +17,6 @@ class ChatEngine {
             console.log(e.message);
 
         })
-        self.socket.emit('ackmsg', "message recieved")
+
     }
 }

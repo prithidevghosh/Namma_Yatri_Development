@@ -183,7 +183,8 @@ module.exports.CREATE_BOOKING = async (req, res) => {
 
         // }
         return res.status(200).json({
-            message: "socket message sent"
+            message: "socket message sent",
+            text: message
         })
     } catch (error) {
 

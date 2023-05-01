@@ -1,6 +1,7 @@
 const amqp = require('amqplib');
 var server_message = [];
-async function consume() {
+
+async function consume(io) {
     try {
         // Connect to RabbitMQ server
         const connection = await amqp.connect('amqps://ioqshnea:oDbp-b63joB8xpiLQ8zbatkW6ewZ9KaM@vulture.rmq.cloudamqp.com/ioqshnea');
@@ -17,8 +18,12 @@ async function consume() {
 
         // Consume messages from the queue
         channel.consume('my-queue', (message) => {
-            server_message.push(message.content.toString())
-            // console.log(`Received message: ${message.content.toString()}`);
+            const msg = message.content.toString();
+            server_message.push(msg);
+            console.log(`Received message: ${msg}`);
+
+            // Emit the message to all connected sockets
+            io.emit('newmsg', { message: msg });
 
             // Acknowledge the message
             channel.ack(message);
@@ -28,32 +33,26 @@ async function consume() {
     }
 }
 
-consume();
-
 module.exports.chatSockets = function (socketServer) {
-    console.log(server_message.length);
     let io = require('socket.io')(socketServer, {
         cors: {
             origin: "*"
         }
     });
+
     io.sockets.on('connection', function (socket) {
         console.log("new client added");
 
         socket.on('disconnect', function () {
             console.log("client got disconnected");
         })
-        setTimeout(() => {
-            console.log(server_message[0]);
-            socket.emit('newmsg', { message: server_message[0] });
-        }, 1000);
 
-        socket.on('ackmsg', function (e) {
-            console.log(e);
-        })
-    })
+        // Emit the latest message to the connected socket
+        if (server_message.length > 0) {
+            socket.emit('newmsg', { message: server_message[server_message.length - 1] });
+        }
+    });
 
-
-
-
+    // Call the consume function and pass the io object
+    consume(io);
 }

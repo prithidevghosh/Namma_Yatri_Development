@@ -7,7 +7,7 @@ import Signup from '@/components/signup';
 import { useRouter } from 'next/router';
 
 function Driver() {
-  const { isLoggedIn } = useSelector((state) => state.cabReducer);
+  // const { isLoggedIn } = useSelector((state) => state.cabReducer);
   const router = useRouter();
   useEffect(() => {
     if (localStorage.getItem('namma_data') !== null) {

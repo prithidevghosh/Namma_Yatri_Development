@@ -6,24 +6,26 @@ const app = express();
 const passport = require('passport');
 const jwtStrategy = require('./config/passport-jwt-strategy');
 const session = require('express-session');
-// const chatServer = require('http').Server(app);
-// const socket = require('./config/socket').chatSockets(chatServer);
+const chatServer = require('http').Server(app);
+const socket = require('./config/socket').chatSockets(chatServer);
 const MongoStore = require('connect-mongo');
 const cors = require('cors');
 
 // chatServer.listen(process.env.PORT || 3000, () => {
 //     console.log("socket port up & runnning");
 // })
+chatServer.listen(5000);
+console.log("chatserver listening on port 5000");
 
-const webSocket = require('ws');
+// const webSocket = require('ws');
 
-const wss = new webSocket.Server({ port: 8080 });
+// const wss = new webSocket.Server({ port: 8080 });
 
-wss.on('connection', (ws) => {
-    console.log("a new client is connected");
+// wss.on('connection', (ws) => {
+//     console.log("a new client is connected");
 
-    ws.send("hi message from server")
-})
+//     ws.send("hi message from server")
+// })
 
 
 app.use(cors());

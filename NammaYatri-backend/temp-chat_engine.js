@@ -1,10 +1,11 @@
 class ChatEngine {
     constructor() {
+        this.socket = io.connect("https://namma-yatri-development.vercel.app/", {
+            withCredentials: false
 
-        this.socket = io.connect("http://localhost:5000")
+        });
         this.connectionHandler();
     }
-
 
     connectionHandler() {
         let self = this;
@@ -13,10 +14,9 @@ class ChatEngine {
         })
 
         self.socket.on('newmsg', function (e) {
-
             console.log(e.message);
-
-        })
-
+        });
     }
 }
+
+let chatEngine = new ChatEngine();

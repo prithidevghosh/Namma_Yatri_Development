@@ -36,7 +36,8 @@ async function consume(io) {
 module.exports.chatSockets = function (socketServer) {
     let io = require('socket.io')(socketServer, {
         cors: {
-            origin: "*"
+            origin: "*",
+            methods: ["GET", "POST"]
         }
     });
 

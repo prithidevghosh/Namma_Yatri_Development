@@ -13,9 +13,9 @@ class ChatEngine {
         })
 
         self.socket.on('newmsg', function (e) {
-            if (e.id == 2) {
-                console.log(e);
-            }
+
+            console.log(e.message);
+
         })
         self.socket.emit('ackmsg', "message recieved")
     }

@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const DRIVER_ON_DUTY = require('../model/driverOnDutySchema');
 const geolib = require('geolib');
 const dotenv = require('dotenv').config();
+const amqp = require('amqplib');
 // const http = require('http');
 // const server = http.createServer(app);
 // const { Server } = require('socket.io');
@@ -130,29 +131,60 @@ module.exports.deleteSession = async (req, res) => {
 
 module.exports.CREATE_BOOKING = async (req, res) => {
     try {
-        const driverOnDutyFetchedDb = await DRIVER_ON_DUTY.find({});
-        if (driverOnDutyFetchedDb.length == 0) {
-            return res.status(400).json({
-                message: "No driver is currently available"
-            })
-        } else {
-            // io.on('connection', (socket) => {
-            //     const customerLatitude = req.body.latitude;
-            //     const customerLongitude = req.body.longitude;
-            //     let driversAvailable = new Map();
-            //     driverOnDutyFetchedDb.forEach(driver => {
-            //         var currentDistance = geolib.getDistance({ latitude: customerLatitude, longitude: customerLongitude },
-            //             { latitude: driver.driverLatitude, longitude: driver.driverLongitude })
+        // const driverOnDutyFetchedDb = await DRIVER_ON_DUTY.find({});
+        // if (driverOnDutyFetchedDb.length == 0) {
+        //     return res.status(400).json({
+        //         message: "No driver is currently available"
+        //     })
+        // } else {
 
-            //         if (currentDistance <= 300) {
-            //             driversAvailable.set(driver._id, socket);
-            //         }
+        const customerLatitude = req.body.latitude;
+        const customerLongitude = req.body.longitude;
+        let driversAvailable = [];
+        // driverOnDutyFetchedDb.forEach(driver => {
+        //     var currentDistance = geolib.getDistance({ latitude: customerLatitude, longitude: customerLongitude },
+        //         { latitude: driver.driverLatitude, longitude: driver.driverLongitude })
 
-            //     })
+        //     if (currentDistance <= 3000000) {
+        //         driversAvailable.push(driver._id);
+        //     }
+
+        // })
+
+        const rabbitMQUrl = 'amqps://ioqshnea:oDbp-b63joB8xpiLQ8zbatkW6ewZ9KaM@vulture.rmq.cloudamqp.com/ioqshnea';
+
+        // Create a connection to RabbitMQ
+        const connection = await amqp.connect(rabbitMQUrl);
+
+        // Create a channel
+        const channel = await connection.createChannel();
+
+        // Define the name of the queue to send messages to
+        const queueName = 'my-queue';
+
+        // Define the message to send
+        const message = {
+            text: 'Hello, new booking recieved',
+            pickupLatitude: customerLatitude,
+            pickupLongitude: customerLongitude,
+            fare: 334
+        };
+
+        // Convert the message to a buffer
+        const messageBuffer = Buffer.from(JSON.stringify(message));
+
+        // Publish the message to the queue
+        const out = await channel.sendToQueue(queueName, messageBuffer);
+
+        // Close the channel and connection
+        await channel.close();
+        await connection.close();
 
 
-            // })
-        }
+        // }
+        return res.status(200).json({
+            message: "socket message sent"
+        })
     } catch (error) {
 
     }
@@ -160,23 +192,53 @@ module.exports.CREATE_BOOKING = async (req, res) => {
 
 
 module.exports.GET_ALL_BOOKING = async (req, res) => {
-    try {
-        const bookingFetchedDb = await BOOKINGS.find({ customerContact: req.params.contact });
-        if (bookingFetchedDb.length > 0) {
-            return res.status(200).json({
-                message: "Booking found",
-                bookings: bookingFetchedDb
-            })
-        } else {
-            return res.status(400).json({
-                message: "No bookings made so far"
-            })
-        }
-    } catch (error) {
-        return res.status(500).json({
-            message: "error caught in catch block of get booking"
-        })
-    }
+    // try {
+    //     const bookingFetchedDb = await BOOKINGS.find({ customerContact: req.params.contact });
+    //     if (bookingFetchedDb.length > 0) {
+    //         return res.status(200).json({
+    //             message: "Booking found",
+    //             bookings: bookingFetchedDb
+    //         })
+    //     } else {
+    //         return res.status(400).json({
+    //             message: "No bookings made so far"
+    //         })
+    //     }
+    // } catch (error) {
+    //     return res.status(500).json({
+    //         message: "error caught in catch block of get booking"
+    //     })
+    // }
+
+
+    // Define the RabbitMQ connection URL
+    const rabbitMQUrl = 'amqp://localhost';
+
+    // Create a connection to RabbitMQ
+    const connection = await amqp.connect(rabbitMQUrl);
+
+    // Create a channel
+    const channel = await connection.createChannel();
+
+    // Define the name of the queue to send messages to
+    const queueName = 'my-queue';
+
+    // Define the message to send
+    const message = {
+        text: 'Hello, test from nammayatri backend',
+    };
+
+    // Convert the message to a buffer
+    const messageBuffer = Buffer.from(JSON.stringify(message));
+
+    // Publish the message to the queue
+    const out = await channel.sendToQueue(queueName, messageBuffer);
+
+    // Close the channel and connection
+    await channel.close();
+    await connection.close();
+
+
 }
 
 module.exports.CANCEL_BOOKING = async (req, res) => {

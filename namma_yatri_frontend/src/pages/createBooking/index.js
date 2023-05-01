@@ -5,6 +5,7 @@ import styles from '@/styles/createBooking.module.scss';
 import Image from 'next/image';
 import nammaYatriLogo from '../../../public/assets/brand.svg';
 import logoutIMG from '../../../public/assets/logoutIMG.png';
+import locationIMG from '../../../public/assets/location.png';
 import Link from 'next/link';
 import { logout } from '@/stores/cabBook';
 
@@ -13,12 +14,31 @@ function createBooking() {
   const { isLoggedIn } = useSelector((state) => state.cabReducer);
   const router = useRouter();
   const dispatch = useDispatch();
+  function getCurrentLocation(e) {
+    e.preventDefault();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          console.log("Latitude:", latitude);
+          console.log("Longitude:", longitude);
+          setPresentAddress({latitude, longitude});
+        },
+        error => {
+          console.error(error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  }
+  
   console.log(isLoggedIn);
   useEffect(() => {
-    if (!isLoggedIn || localStorage.getItem('namma_data') === null) {
+    if ( localStorage.getItem('namma_data') === null) {
       router.push('/');
     }
-  }, [isLoggedIn]);
+  }, []);
   const handleLogout = () => {
     dispatch(logout());
   };
@@ -109,11 +129,13 @@ function createBooking() {
             <label htmlFor='present-address-lat' className={styles.form__label}>
               Present Address:
             </label>
+
             <label
               htmlFor='present-address-lat'
               className={styles.form__label_inp}
             >
               Present Address Latitude:
+              <Image title='Get Present Address' height={15} width={15} style={{cursor:'pointer'}} src={locationIMG} alt='location'  onClick={(e) => getCurrentLocation(e)}/>
             </label>
             <input
               type='text'

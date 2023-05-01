@@ -7,5 +7,5 @@
 }
 
 body {
-  background-image: url('../../public/assets/background.gif');
+  background-image: url('/assets/background.gif');
 }

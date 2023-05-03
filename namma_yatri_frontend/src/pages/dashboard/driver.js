@@ -6,6 +6,31 @@ import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import { logout } from '@/stores/cabBook';
+import io from 'socket.io-client';
+
+
+class ChatEngine {
+  constructor(socket) {
+    this.socket = socket;
+    this.connectionHandler();
+  }
+
+  connectionHandler() {
+    let self = this;
+
+    this.socket.on('connect', function () {
+      console.log('connection established');
+    });
+
+    self.socket.on('newmsg', function (e) {
+      if (e.id == 2) {
+        console.log(e);
+      }
+    });
+    self.socket.emit('ackmsg', 'message recieved');
+  }
+}
+
 
 function Dashboard() {
   const [name, setName] = useState('');
@@ -45,16 +70,8 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    const connectWebSocket = () => {
-      const socket = new WebSocket('ws://localhost:8080');
-      socket.addEventListener('open', () => {
-        console.log('we are connected');
-      });
-      return socket;
-    };
-
-    const socket = connectWebSocket();
-    console.log(socket);
+    const socket = io.connect('https://namma-yatri-development.vercel.app/');
+    const chatEngine = new ChatEngine(socket);
   }, []);
 
   return (

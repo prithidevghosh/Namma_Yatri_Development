@@ -1,6 +1,6 @@
 class ChatEngine {
     constructor() {
-        this.socket = io.connect("https://namma-yatri-development.vercel.app/", {
+        this.socket = io.connect("http://localhost:8000", {
             withCredentials: false
 
         });
@@ -20,3 +20,4 @@ class ChatEngine {
 }
 
 let chatEngine = new ChatEngine();
+

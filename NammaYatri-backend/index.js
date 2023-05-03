@@ -10,23 +10,7 @@ const chatServer = require('http').Server(app);
 const socket = require('./config/socket').chatSockets(chatServer);
 const MongoStore = require('connect-mongo');
 const cors = require('cors');
-
-// chatServer.listen(process.env.PORT || 3000, () => {
-//     console.log("socket port up & runnning");
-// })
-chatServer.listen(5000);
-console.log("chatserver listening on port 5000");
-
-// const webSocket = require('ws');
-
-// const wss = new webSocket.Server({ port: 8080 });
-
-// wss.on('connection', (ws) => {
-//     console.log("a new client is connected");
-
-//     ws.send("hi message from server")
-// })
-
+const path = require('path');
 
 app.use(cors());
 app.use(express.urlencoded());
@@ -54,8 +38,8 @@ app.get('/', (req, res) => {
 })
 app.use('/api', require('./routes/index'));
 
-app.listen(port, (e) => {
+chatServer.listen(port, (e) => {
     if (e) { console.log(e); return; }
 
     console.log(`server started at port ${port}`);
-})
+});
